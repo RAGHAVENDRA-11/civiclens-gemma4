@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 
+from ai.gemma.analyzer import analyze_civic_issue
 from app.schemas.issue import IssueAnalysis, IssueCreate
 
 
@@ -14,14 +15,22 @@ router = APIRouter(
     response_model=IssueAnalysis,
 )
 def analyze_issue(issue: IssueCreate):
-    """
-    AI analysis contract.
+    try:
+        analysis = analyze_civic_issue(issue.text)
 
-    The actual Gemma implementation will be integrated later
-    through a dedicated service interface owned by the AI team.
-    """
+        return IssueAnalysis(
+            category=analysis.category,
+            title=analysis.title,
+            description=analysis.description,
+            location=analysis.location,
+            duration=analysis.duration,
+            impact=analysis.impact,
+            priority=analysis.priority,
+            confidence=analysis.confidence,
+        )
 
-    return IssueAnalysis(
-        title="AI analysis pending",
-        description=issue.text,
-    )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Civic issue analysis service failed.",
+        )
