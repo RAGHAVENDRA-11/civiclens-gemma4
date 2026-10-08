@@ -1,4 +1,11 @@
+"use client";
+
+import { useState } from "react";
+import AnalysisResult from "@/components/AnalysisResult";
+import IssueForm, { AnalysisData } from "@/components/IssueForm";
+
 export default function Home() {
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       {/* Navbar */}
@@ -48,7 +55,19 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      <IssueForm onAnalysisComplete={setAnalysis} />
+      {analysis && (
+  <AnalysisResult
+    category={analysis.category}
+    title={analysis.title}
+    description={analysis.description}
+    location={analysis.location}
+    duration={analysis.duration}
+    impact={analysis.impact}
+    priority={analysis.priority}
+    confidence={analysis.confidence}
+  />
+)}
       {/* Features */}
       <section className="border-t bg-white">
         <div className="mx-auto grid max-w-6xl gap-6 px-6 py-16 md:grid-cols-3">
