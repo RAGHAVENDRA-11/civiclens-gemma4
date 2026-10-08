@@ -41,24 +41,48 @@ export default function IssueForm({
 
     setLoading(true);
 
-    // Temporary mock response.
-    // This will be replaced with the FastAPI /api/analyze call.
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-    const mockResult: AnalysisData = {
-      category: "Road Damage",
-      title: "Large pothole near bus stand",
-      description:
-        "A large pothole is affecting traffic near the bus stand and making it difficult for two-wheelers to pass.",
-      location: "Bus Stand",
-      duration: "2 weeks",
-      impact: "Two-wheeler traffic",
-      priority: "high",
-      confidence: 0.91,
-    };
+      if (!apiBaseUrl) {
+        throw new Error("API URL is not configured.");
+      }
 
-    setLoading(false);
-    onAnalysisComplete(mockResult);
+      const response = await fetch(
+        `${apiBaseUrl.replace(/\/$/, "")}/api/analyze`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: description.trim(),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("API request failed.");
+      }
+
+      let result: unknown;
+
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error("Invalid API response.");
+      }
+
+      if (!isAnalysisData(result)) {
+        throw new Error("Unexpected API response.");
+      }
+
+      onAnalysisComplete(result);
+    } catch {
+      setError("Unable to analyze the issue right now. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -121,3 +145,24 @@ export default function IssueForm({
     </section>
   );
 }
+
+function isAnalysisData(value: unknown): value is AnalysisData {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const data = value as Record<string, unknown>;
+
+  return (
+    typeof data.category === "string" &&
+    typeof data.title === "string" &&
+    typeof data.description === "string" &&
+    typeof data.location === "string" &&
+    typeof data.duration === "string" &&
+    typeof data.impact === "string" &&
+    (data.priority === "low" ||
+      data.priority === "medium" ||
+      data.priority === "high") &&
+    typeof data.confidence === "number"
+  );
+} 

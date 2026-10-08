@@ -1,112 +1,138 @@
 "use client";
 
 import { useState } from "react";
-import AnalysisResult from "@/components/AnalysisResult";
-import IssueForm, { AnalysisData } from "@/components/IssueForm";
+
+type Result = {
+  category: string;
+  title: string;
+  description: string;
+  location: string;
+  duration: string;
+  impact: string;
+  priority: string;
+  confidence: number;
+};
 
 export default function Home() {
-  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
+  const [issue, setIssue] = useState(
+    "There is a huge pothole near the bus stand. Bikes are struggling to pass and it has been there for two weeks."
+  );
+  const [result, setResult] = useState<Result | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function analyzeIssue() {
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8001/api/analyze",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: issue }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch {
+      setError(
+        "Unable to analyze the issue. Please make sure the FastAPI backend is running on port 8001."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      {/* Navbar */}
-      <nav className="border-b bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-bold text-blue-700">
-              CivicLens
-            </h1>
-            <p className="text-xs text-slate-500">
-              AI-powered civic action
-            </p>
-          </div>
+    <main className="min-h-screen bg-slate-100 px-6 py-12">
+      <div className="mx-auto max-w-3xl">
+        <h1 className="text-4xl font-bold text-blue-700">
+          CivicLens
+        </h1>
 
-          <button className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
-            Report an Issue
+        <p className="mt-2 text-lg text-slate-600">
+          AI-Powered Civic Issue Understanding using Gemma 4
+        </p>
+
+        <div className="mt-8 rounded-xl bg-white p-6 shadow">
+          <label className="font-semibold text-slate-700">
+            Civic Issue
+          </label>
+
+          <textarea
+            value={issue}
+            onChange={(e) => setIssue(e.target.value)}
+            rows={6}
+            className="mt-3 w-full rounded-lg border border-slate-300 p-4 text-slate-900"
+          />
+
+          <button
+            onClick={analyzeIssue}
+            disabled={loading}
+            className="mt-4 w-full rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white disabled:opacity-60"
+          >
+            {loading ? "Analyzing with Gemma 4..." : "Analyze Issue"}
           </button>
+
+          {error && (
+            <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-700">
+              {error}
+            </div>
+          )}
         </div>
-      </nav>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="max-w-3xl">
-          <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700">
-            Powered by Gemma 4
-          </span>
+        {result && (
+          <div className="mt-8 rounded-xl bg-white p-6 shadow">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Gemma 4 Analysis
+            </h2>
 
-          <h2 className="mt-6 text-5xl font-bold leading-tight tracking-tight">
-            Make your community
-            <span className="text-blue-600"> better, one report at a time.</span>
-          </h2>
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            Describe a civic problem in your own words. CivicLens uses AI to
-            understand the issue, identify its priority, and turn it into a
-            structured civic report.
-          </p>
-
-          <div className="mt-8 flex gap-4">
-            <button className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700">
-              Report a Civic Issue
-            </button>
-
-            <button className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 hover:bg-slate-100">
-              View Reports
-            </button>
+            <div className="mt-6 space-y-4">
+              <ResultRow label="Category" value={result.category} />
+              <ResultRow label="Title" value={result.title} />
+              <ResultRow
+                label="Description"
+                value={result.description}
+              />
+              <ResultRow label="Location" value={result.location} />
+              <ResultRow label="Duration" value={result.duration} />
+              <ResultRow label="Impact" value={result.impact} />
+              <ResultRow label="Priority" value={result.priority} />
+              <ResultRow
+                label="Confidence"
+                value={`${Math.round(result.confidence * 100)}%`}
+              />
+            </div>
           </div>
-        </div>
-      </section>
-      <IssueForm onAnalysisComplete={setAnalysis} />
-      {analysis && (
-  <AnalysisResult
-    category={analysis.category}
-    title={analysis.title}
-    description={analysis.description}
-    location={analysis.location}
-    duration={analysis.duration}
-    impact={analysis.impact}
-    priority={analysis.priority}
-    confidence={analysis.confidence}
-  />
-)}
-      {/* Features */}
-      <section className="border-t bg-white">
-        <div className="mx-auto grid max-w-6xl gap-6 px-6 py-16 md:grid-cols-3">
-          <Feature
-            title="Describe Naturally"
-            description="Tell us about potholes, garbage, streetlights, drainage, or any other civic issue."
-          />
-
-          <Feature
-            title="AI Understands"
-            description="Gemma 4 converts your description into structured civic information."
-          />
-
-          <Feature
-            title="Take Action"
-            description="Track reports from submission through review, progress, and resolution."
-          />
-        </div>
-      </section>
+        )}
+      </div>
     </main>
   );
 }
 
-function Feature({
-  title,
-  description,
+function ResultRow({
+  label,
+  value,
 }: {
-  title: string;
-  description: string;
+  label: string;
+  value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-600">
-        ✓
-      </div>
-
-      <h3 className="text-xl font-semibold">{title}</h3>
-
-      <p className="mt-2 leading-7 text-slate-600">{description}</p>
+    <div className="rounded-lg bg-slate-50 p-4">
+      <p className="text-sm font-semibold text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-slate-900">{value}</p>
     </div>
   );
 }
