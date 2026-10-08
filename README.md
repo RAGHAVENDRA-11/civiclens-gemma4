@@ -1,182 +1,85 @@
-# [Project Name]
+# CivicLens
 
-> [One-line description of the project and what it does.]
+> An open-source AI-powered civic issue understanding platform that uses Gemma 4 to transform natural-language citizen reports into structured and actionable civic information.
 
 ## Team
 
-**Team Name:** [Team Name]
+**Team Name:** Chill stack
 
 
-| Member | Contribution   |
-| ------ | -------------- |
-| [Name] | [Contribution] |
-| [Name] | [Contribution] |
-| [Name] | [Contribution] |
-| [Name] | [Contribution] |
-
+| Member | Contribution |
+| ------ | ------------ |
+| Raghavendra R| Team Lead, Gemma 4 AI integration, civic issue classification, structured information extraction, priority analysis |
+| Pravin Raja M | FastAPI backend, API contracts, Gemma backend integration, CORS configuration |
+| Ragul S | Next.js frontend, CivicLens UI, issue reporting form, AI analysis result interface |
+| Sudharsan N K | AI/Data engineering, semantic similarity and duplicate issue detection prototype |
 
 ## Problem Statement
 
 ### The Problem
 
-[Describe the problem being addressed, who is affected by it, and the context in which it occurs.]
+Citizens encounter everyday civic problems such as potholes, garbage accumulation, water leakage, blocked drainage, and broken streetlights.
+
+Although citizens can identify these problems, reporting them in a structured and useful way can be difficult. Important information such as the type of issue, location, duration, impact, and priority may be missing or inconsistently described.
+
+This makes it harder to transform individual citizen observations into useful and actionable civic information.
 
 ### Why We Chose This Problem
 
-[Explain why the team selected this problem and why solving it is important.]
+Civic problems directly affect people's daily lives and communities.
+
+We chose this problem because a large amount of valuable civic information already exists in the form of natural-language observations from citizens. We wanted to explore how open-source/open-weight AI can transform these unstructured descriptions into structured information that can support future civic issue management and community-level analysis.
 
 ## Solution
 
-[Describe the proposed solution and how it addresses the problem.]
+CivicLens allows citizens to describe a civic problem naturally instead of requiring them to understand complex reporting categories.
+
+The description is sent to a FastAPI backend, which uses Gemma 4 to analyze the report and return structured civic information.
+
+The system identifies the civic category and extracts useful information such as location, duration, impact, priority, and confidence.
 
 ### Key Features
 
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-- [Feature 4]
+- Natural-language civic issue reporting
+- Gemma 4-powered civic issue classification
+- Structured information extraction
+- Automatic priority recommendation
+- Confidence scoring
+- FastAPI REST API
+- Interactive Next.js frontend
+- Semantic similarity prototype for future duplicate/community issue detection
 
 ## Innovation and Differentiation
 
-[Explain what is innovative about the approach and how it differs from existing or conventional solutions.]
+CivicLens focuses on using Gemma 4 as a structured civic issue understanding engine rather than as a generic chatbot.
+
+Instead of requiring citizens to manually select multiple fields, the system accepts a natural-language description and automatically transforms it into structured civic information.
+
+For example:
+
+> "There is a huge pothole near the bus stand. Bikes are struggling to pass and it has been there for two weeks."
+
+can be transformed into:
+
+- Category: Road Damage
+- Location: Near the bus stand
+- Duration: 2 weeks
+- Impact: Bikes are struggling to pass
+- Priority: High
+- Confidence: 0.98
+
+This creates a foundation for future duplicate detection, community issue grouping, and civic analytics.
 
 ## Technical Implementation
 
 ### Architecture
 
-[Add the system architecture or workflow Mermaid diagram here.]
-
-### Technology Stack
-
-
-| Category        | Technologies                |
-| --------------- | --------------------------- |
-| Frontend        | [Technologies / N/A]        |
-| Backend         | [Technologies / N/A]        |
-| Database        | [Technologies / N/A]        |
-| AI / ML         | [Models / frameworks / N/A] |
-| Infrastructure  | [Technologies / N/A]        |
-| APIs / Services | [Services / N/A]            |
-
-
-If a category or technology is not implemented in the project, specify `N/A` instead of leaving the field blank.
-
-### How It Works
-
-[Explain the major components of the system and how they interact.]
-
-### Technical Decisions
-
-[Explain important architectural, algorithmic, or engineering decisions made during development.]
-
-## Implementation During the Hackathon
-
-[Describe what the team built during the Hack Day and the major functionality or components completed during the event.]
-
-### Team Contributions
-
-- **[Member Name]:** [Contribution]
-- **[Member Name]:** [Contribution]
-- **[Member Name]:** [Contribution]
-- **[Member Name]:** [Contribution]
-
-## Working Application
-
-**Live Application:** [Live URL]
-
-[Briefly explain how the deployed application can be accessed and what functionality can be tested.]
-
-The submitted application should be functional and accessible through the provided link where applicable.
-
-## Demo Video
-
-**Demo Video:** [Video URL]
-
-[Provide a short demonstration of the working project, covering the main user flow and important functionality.]
-
-## Open Source and AI Usage
-
-### AI / Models
-
-- **[Model]:** [How it is used]
-
-### Open Source Components
-
-- **[Library / Framework]:** [Purpose]
-- **[Dataset]:** [Purpose]
-- **[API / Service]:** [Purpose]
-
-[Include relevant licenses, attribution, and acknowledgements for external components.]
-
-## Setup and Usage
-
-### Prerequisites
-
-- [Requirement]
-- [Requirement]
-
-### Installation
-
-```bash
-git clone [repository-url]
-cd [project-directory]
-[installation-command]
-```
-
-### Environment Variables
-
-```env
-[VARIABLE_NAME]=[value]
-```
-
-
-
-### Running the Project
-
-```bash
-[run-command]
-```
-
-### Usage
-
-[Explain the basic steps required to use the project.]
-
-## Devpost Submission
-
-**Devpost Project:** [Devpost Project URL]
-
-[Add the link to the team's Devpost submission. Ensure the Devpost project page is complete and contains the required project information, links, media, and team details.]
-
-## Credits and License
-
-### Credits
-
-[Credit libraries, frameworks, datasets, models, APIs, contributors, and other external resources used.]
-
-### License
-
-[License name and/or link.]
-
-## Submission Checklist
-
-- [ ] Project title and description added
-- [ ] All team members listed
-- [ ] Problem clearly explained
-- [ ] Reason for choosing the problem explained
-- [ ] Solution and key features documented
-- [ ] Innovation and differentiation explained
-- [ ] Architecture included
-- [ ] Technical implementation documented
-- [ ] Work completed during the hackathon documented
-- [ ] Team contributions documented
-- [ ] Working application is functional
-- [ ] Live application link added where applicable
-- [ ] Demo video added
-- [ ] AI and open-source components documented
-- [ ] Setup and usage instructions tested
-- [ ] Challenges and learnings documented
-- [ ] Devpost submission completed
-- [ ] Devpost link added
-- [ ] Credits added
-- [ ] License added
-- [ ] Repository is organized and complete
+```mermaid
+flowchart TD
+    A[Citizen] --> B[Next.js Frontend]
+    B -->|HTTP POST /api/analyze| C[FastAPI Backend]
+    C --> D[Gemma 4 AI Engine]
+    D --> E[Structured Civic Analysis]
+    E --> C
+    C --> B
+    B --> F[Analysis Result UI]
