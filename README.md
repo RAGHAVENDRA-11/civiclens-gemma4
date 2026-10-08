@@ -9,7 +9,7 @@
 
 | Member | Contribution |
 | ------ | ------------ |
-| Raghavendra | Team Lead, Gemma 4 AI integration, civic issue classification, structured information extraction, priority analysis |
+| Raghavendra R| Team Lead, Gemma 4 AI integration, civic issue classification, structured information extraction, priority analysis |
 | Pravin Raja M | FastAPI backend, API contracts, Gemma backend integration, CORS configuration |
 | Ragul S | Next.js frontend, CivicLens UI, issue reporting form, AI analysis result interface |
 | Sudharsan N K | AI/Data engineering, semantic similarity and duplicate issue detection prototype |
